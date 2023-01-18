@@ -11,10 +11,11 @@ pub fn cipher(text: String, shift: u8) -> String {
     }).collect()
 }
 
-pub fn decipher(_key: u8) -> String {
-    let text = read_input();
-
-    text
+pub fn decipher(text: String, shift: u8) -> String {
+    // Z in ASCII == 90
+    text.to_uppercase().chars().map(|char| {
+        (char as u8 + shift) as char //
+    }).collect()
 }
 
 
@@ -62,5 +63,18 @@ mod tests {
     #[test]
     fn string_with_space_works() {
         assert_eq!(cipher(String::from("attack the castle"), 1), "BUUBDL UIF DBTUMF");
+    }
+
+    #[test]
+    fn rotates_back_to_start() {
+        assert_eq!(cipher(String::from("z"), 1), "A");
+    }
+
+    #[test]
+    fn key_goes_back_to_zero() {
+        assert_eq!(cipher(String::from("A"), 26), "A");
+        assert_eq!(cipher(String::from("A"), 27), "B");
+        assert_eq!(cipher(String::from("Z"), 26), "Z");
+        assert_eq!(cipher(String::from("Z"), 27), "A");
     }
 }
