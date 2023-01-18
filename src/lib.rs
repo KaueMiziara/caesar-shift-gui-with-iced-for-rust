@@ -1,3 +1,3 @@
 pub mod caesar_shift;
 
-// pub mod gui;
+pub mod gui;

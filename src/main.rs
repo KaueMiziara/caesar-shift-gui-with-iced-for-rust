@@ -1,4 +1,6 @@
 use caesar_shift_gui::caesar_shift::{cipher, decipher, read_input};
+use caesar_shift_gui::gui;
+use iced::Sandbox;
 
 fn main() {
     let text = read_input();
