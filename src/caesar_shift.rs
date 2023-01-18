@@ -1,25 +1,30 @@
 use std::io;
 
-pub fn cipher(_key: u8) -> String {
-    let text = read_input();
-
-    text.trim().to_string()
+pub fn cipher(text: String, shift: u8) -> String {
+    // 'A' in ASCII == 65
+    text.to_uppercase().chars().map(|char| {
+        if char != ' ' {
+            (65 + (char as u8 + shift - 65) % 26) as char
+        } else {
+            char
+        }
+    }).collect()
 }
 
 pub fn decipher(_key: u8) -> String {
     let text = read_input();
 
-    text.trim().to_string()
+    text
 }
 
 
-fn read_input() -> String {
+pub fn read_input() -> String {
     let mut buffer = String::new();
 
     loop {
         match io::stdin().read_line(&mut buffer) {
             Ok(_) => {
-                let mut alpha: bool = true;
+                let mut valid: bool = true;
 
                 for char in buffer.trim().chars() {
                     if !(char.is_ascii_alphabetic() || char.eq(&' ')) {
@@ -27,13 +32,13 @@ fn read_input() -> String {
                         got {char}");
                         
                         buffer.clear();
-                        alpha = false;
+                        valid = false;
                         
                         break;
                     }
                 }
-                if alpha == true {
-                    return buffer;
+                if valid == true {
+                    return buffer.trim().to_string();
                 }
             }
             Err(_) => {
@@ -42,4 +47,20 @@ fn read_input() -> String {
             }
         }
     };
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn lower_case_to_upper_abc() {
+        assert_eq!(cipher(String::from("abc"), 1), "BCD");
+    }
+
+    #[test]
+    fn string_with_space_works() {
+        assert_eq!(cipher(String::from("attack the castle"), 1), "BUUBDL UIF DBTUMF");
+    }
 }

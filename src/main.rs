@@ -1,6 +1,7 @@
-use caesar_shift_gui::caesar_shift::cipher;
+use caesar_shift_gui::caesar_shift::{cipher, read_input};
 
 fn main() {
-    let encrypted = cipher(1);
+    let text = read_input();
+    let encrypted = cipher(text, 2);
     println!("{encrypted}");
 }
