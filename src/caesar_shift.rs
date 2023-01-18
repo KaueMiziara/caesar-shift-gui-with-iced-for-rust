@@ -1,7 +1,8 @@
 use std::io;
 
+// 'A' in ASCII == 65
+
 pub fn cipher(text: String, shift: u8) -> String {
-    // 'A' in ASCII == 65
     text.to_uppercase().chars().map(|char| {
         if char != ' ' {
             (65 + (char as u8 + shift - 65) % 26) as char
@@ -12,9 +13,12 @@ pub fn cipher(text: String, shift: u8) -> String {
 }
 
 pub fn decipher(text: String, shift: u8) -> String {
-    // Z in ASCII == 90
     text.to_uppercase().chars().map(|char| {
-        (char as u8 + shift) as char //
+        if char != ' ' {
+            (65 + (char as u8 - shift + 65) % 26) as char //
+        } else {
+            char
+        }
     }).collect()
 }
 
@@ -55,8 +59,9 @@ pub fn read_input() -> String {
 mod tests {
     use super::*;
 
+    // Cipher
     #[test]
-    fn lower_case_to_upper_abc() {
+    fn lower_case_to_upper() {
         assert_eq!(cipher(String::from("abc"), 1), "BCD");
     }
 
@@ -71,10 +76,24 @@ mod tests {
     }
 
     #[test]
-    fn key_goes_back_to_zero() {
+    fn key_goes_back_to_zero_cipher() {
         assert_eq!(cipher(String::from("A"), 26), "A");
         assert_eq!(cipher(String::from("A"), 27), "B");
         assert_eq!(cipher(String::from("Z"), 26), "Z");
         assert_eq!(cipher(String::from("Z"), 27), "A");
+    }
+
+    // Decipher
+    #[test]
+    fn rotates_to_end() {
+        assert_eq!(decipher(String::from("A"), 1), "Z");
+    }
+
+    #[test]
+    fn key_goes_back_to_zero_decipher() {
+        assert_eq!(decipher(String::from("A"), 26), "A");
+        assert_eq!(decipher(String::from("A"), 27), "Z");
+        assert_eq!(decipher(String::from("Z"), 26), "Z");
+        assert_eq!(decipher(String::from("Z"), 27), "Y");
     }
 }
