@@ -1,5 +1,3 @@
-use std::io;
-
 // 'A' in ASCII == 65
 
 pub fn cipher(text: String, shift: u8) -> String {
@@ -20,38 +18,6 @@ pub fn decipher(text: String, shift: u8) -> String {
             char
         }
     }).collect()
-}
-
-
-pub fn read_input() -> String {
-    let mut buffer = String::new();
-
-    loop {
-        match io::stdin().read_line(&mut buffer) {
-            Ok(_) => {
-                let mut valid: bool = true;
-
-                for char in buffer.trim().chars() {
-                    if !(char.is_ascii_alphabetic() || char.eq(&' ')) {
-                        println!("All characters should be in the latin alphabet, \
-                        got {char}");
-                        
-                        buffer.clear();
-                        valid = false;
-                        
-                        break;
-                    }
-                }
-                if valid == true {
-                    return buffer.trim().to_string();
-                }
-            }
-            Err(_) => {
-                println!("Invalid input. Try again.");
-                continue;
-            }
-        }
-    };
 }
 
 
