@@ -1,4 +1,4 @@
-use crate::caesar_shift::cipher;
+use crate::caesar_shift::{cipher, decipher};
 
 use iced::{Alignment, Length, Sandbox};
 use iced::widget::{button, column, container, row, text, text_input};
@@ -16,6 +16,7 @@ pub enum Message {
     InputChanged(String),
     ShiftChanged(String),
     EncryptPressed,
+    DecryptPressed,
 }
 
 
@@ -59,8 +60,7 @@ impl Sandbox for Scene {
         String::from("Caesar Shift")
     }
 
-
-    // TODO decrypt functionality
+    
     fn update(&mut self, message: Self::Message) {
         match message {
             Message::InputChanged(value) => {
@@ -72,13 +72,31 @@ impl Sandbox for Scene {
                 }
             },
             Message::EncryptPressed => {
-                if self.input_is_valid() {
+                if self.input_is_valid()      &&
+                  !self.input_text.is_empty() &&
+                   self.shift_is_valid() {
                     self.output_text = cipher(self.input_text.clone(),
                                               self.shift.clone());
                     self.input_text = String::from("");
-                } else {
+                } else if !self.input_is_valid() {
                     self.output_text = 
                         String::from("All characters should be in the latin alphabet")
+                } else if self.input_text.is_empty() {
+                    self.output_text = 
+                        String::from("The text should not be empty.")
+                }
+            },
+            Message::DecryptPressed => {
+                if self.input_is_valid() {
+                    self.output_text = decipher(self.input_text.clone(),
+                                              self.shift.clone());
+                    self.input_text = String::from("");
+                } else if !self.input_is_valid() {
+                    self.output_text = 
+                        String::from("All characters should be in the latin alphabet")
+                } else if !self.shift_is_valid() {
+                    self.output_text = 
+                        String::from("The shift value should be a number.")
                 }
             },
             Message::ShiftChanged(shift) => {
@@ -93,7 +111,6 @@ impl Sandbox for Scene {
     }
 
 
-    // TODO decrypt button
     fn view(&self) -> iced::Element<Message> {
         let user_input = text_input(
             "Text to encrypt...",
@@ -119,17 +136,28 @@ impl Sandbox for Scene {
             .padding(10)
             .on_press(Message::EncryptPressed);
 
+
+        let decrypt_button =
+            button("Decrypt")
+            .padding(10)
+            .on_press(Message::DecryptPressed);
+        
         
         let content = column![
             row![
                 user_input,
                 shift_input,
-                encrypt_button,
             ]
             .spacing(10)
             .width(Length::Units(800))
             .height(Length::Units(50))
             .align_items(Alignment::Center),
+            row![
+                encrypt_button,
+                decrypt_button,
+            ]
+            .spacing(10)
+            .padding(10),
             text(&self.output_text),
             ]
             .spacing(20)

@@ -1,7 +1,8 @@
 // 'A' in ASCII == 65
 
 pub fn cipher(text: String, shift: String) -> String {
-    let shift = (shift.trim().parse::<u128>().unwrap() % 26) as u8;
+    let shift = shift.trim().parse::<u128>().unwrap_or_default();
+    let shift = (shift % 26) as u8;
 
     text.to_uppercase().chars().map(|char| {
         if char != ' ' {
@@ -13,7 +14,8 @@ pub fn cipher(text: String, shift: String) -> String {
 }
 
 pub fn decipher(text: String, shift: String) -> String {
-    let shift = (shift.trim().parse::<u128>().unwrap() % 26) as u8;
+    let shift = shift.trim().parse::<u128>().unwrap_or_default();
+    let shift = (shift % 26) as u8;
 
     text.to_uppercase().chars().map(|char| {
         if char != ' ' {
