@@ -1,7 +1,11 @@
 use crate::caesar_shift::{cipher, decipher};
 
-use iced::{Alignment, Length, Sandbox};
+use iced::{Alignment, Length, Sandbox, Theme};
 use iced::widget::{button, column, container, row, text, text_input};
+
+extern crate clipboard;
+use clipboard::ClipboardProvider;
+use clipboard::ClipboardContext;
 
 
 #[derive(Default)]
@@ -17,6 +21,7 @@ pub enum Message {
     ShiftChanged(String),
     EncryptPressed,
     DecryptPressed,
+    CopyPressed,
 }
 
 
@@ -60,7 +65,12 @@ impl Sandbox for Scene {
         String::from("Caesar Shift")
     }
 
-    
+
+    fn theme(&self) -> Theme {
+        Theme::Dark
+    }
+
+
     fn update(&mut self, message: Self::Message) {
         match message {
             Message::InputChanged(value) => {
@@ -106,6 +116,11 @@ impl Sandbox for Scene {
                     self.output_text = 
                         String::from("The shift value should be a number.")
                 }
+            },
+            Message::CopyPressed => {
+                let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+
+                ctx.set_contents(self.output_text.to_owned()).unwrap();
             }
         }
     }
@@ -117,8 +132,8 @@ impl Sandbox for Scene {
             &self.input_text,
             Message::InputChanged
         )
-            .padding(10)
-            .size(20);
+        .padding(10)
+        .size(20);
 
 
         let shift_input = text_input(
@@ -126,9 +141,9 @@ impl Sandbox for Scene {
             &self.shift,
             Message::ShiftChanged
         )
-            .padding(10)
-            .size(20)
-            .width(Length::Units(80));
+        .padding(10)
+        .size(20)
+        .width(Length::Units(80));
         
 
         let encrypt_button =
@@ -141,8 +156,14 @@ impl Sandbox for Scene {
             button("Decrypt")
             .padding(10)
             .on_press(Message::DecryptPressed);
-        
-        
+
+
+        let clipboard_button =
+        button("Copy output")
+        .padding(5)
+        .on_press(Message::CopyPressed);
+
+
         let content = column![
             row![
                 user_input,
@@ -158,11 +179,16 @@ impl Sandbox for Scene {
             ]
             .spacing(10)
             .padding(10),
-            text(&self.output_text),
+            row![
+                text(&self.output_text),
+                clipboard_button,
             ]
-            .spacing(20)
-            .padding(20)
-            .align_items(Alignment::Center);
+            .spacing(10)
+            .align_items(Alignment::Center)
+        ]
+        .spacing(20)
+        .padding(20)
+        .align_items(Alignment::Center);
 
 
         container(content)
